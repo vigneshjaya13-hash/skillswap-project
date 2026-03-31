@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS skills (
     description TEXT,
     category VARCHAR(50),
     type ENUM('offered', 'requested') NOT NULL,
+    resource_link VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
