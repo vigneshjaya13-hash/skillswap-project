@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS skillswap;
-USE skillswap;
+-- Removed hardcoded database for cloud compatibility
 
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,

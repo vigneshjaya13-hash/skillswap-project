@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const { initializeDatabase } = require('./config/db');
 
 // Route imports
@@ -26,6 +27,14 @@ app.use('/api/chat', chatRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+// Serve static frontend in production
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Handle React routing, return all requests to React app
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+});
 
 // Database initialization & Server start
 initializeDatabase().then(() => {

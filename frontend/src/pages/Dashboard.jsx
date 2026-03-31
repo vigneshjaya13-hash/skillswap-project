@@ -28,7 +28,7 @@ const Dashboard = () => {
 
     const fetchSkills = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/skills');
+            const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/skills`);
             if (res.ok) {
                 const data = await res.json();
                 setSkills(data.length > 0 ? data : getMockSkills());
@@ -83,7 +83,7 @@ const Dashboard = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/skills', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/skills`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...newSkill, user_id: user.id })
@@ -114,7 +114,7 @@ const Dashboard = () => {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/swaps', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/swaps`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

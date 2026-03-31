@@ -15,20 +15,31 @@ const Navbar = () => {
 
     const handleAuth = async (e) => {
         e.preventDefault();
+        const { username, email, password } = formData;
+        const isRegister = true; // Auto-detect mode enabled
         try {
-            let res = await fetch('http://localhost:5000/api/users/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            let data = await res.json();
-
-            // If user already exists, seamlessly log them in!
-            if (data.error && data.error.includes('already exists')) {
-                res = await fetch('http://localhost:5000/api/users/login', {
+            let res;
+            if (isRegister) {
+                res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/users/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: formData.email, password: formData.password })
+                    body: JSON.stringify({ username, email, password })
+                });
+            } else {
+                res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+            }
+            let data = await res.json();
+
+            // If user already exists during registration, seamlessly log them in!
+            if (isRegister && data.error && data.error.includes('already exists')) {
+                res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
                 });
                 data = await res.json();
             }

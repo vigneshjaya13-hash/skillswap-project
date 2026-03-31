@@ -15,7 +15,7 @@ const Inbox = () => {
         if (!user) { setLoading(false); return; }
         const fetchSwaps = async () => {
             try {
-                const res = await fetch(`http://localhost:5000/api/swaps/${user.id}`);
+                const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/swaps/${user.id}`);
                 const data = await res.json();
                 setSwaps(Array.isArray(data) ? data : []);
             } catch (err) {
@@ -29,7 +29,7 @@ const Inbox = () => {
 
     const handleUpdateStatus = async (id, newStatus) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/swaps/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000')}/api/swaps/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
