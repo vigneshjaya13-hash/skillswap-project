@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
         if (msgLower.includes('who') && (msgLower.includes('build') || msgLower.includes('made') || msgLower.includes('creator'))) {
             return res.json({ reply: "This platform was built as an advanced DBMS and Fullstack web project! It uses a highly scalable TiDB cloud database, React, and Node.js. 🌟" });
         }
-        if (msgLower.includes('hello') || msgLower.includes('hi ')) {
+        if (msgLower.includes('hello') || msgLower.includes('hey') || msgLower === 'hi' || msgLower.includes('hi ')) {
             return res.json({ reply: "Hello! I'm your SkillSwap Artificial Intelligence. I can help you navigate the platform, learn how to trade skills, or answer any technical questions. How can I assist you today? 🤖" });
         }
         
@@ -47,10 +47,12 @@ Respond in a helpful, conversational, and deeply knowledgeable way. Keep it rela
         let errorMsg = "I'm having a little trouble connecting to my AI brain right now. Please try again in a moment! 🧠⚠️";
         
         if (error.name === 'AbortError') {
-            errorMsg = "The AI network is extremely busy right now and took too long to answer! Try asking again. ⏳";
+            errorMsg = "The AI network is extremely busy right now and took too long to answer! Try asking me about 'SkillSwap' or 'how to post' instead! ⏳";
+        } else {
+            errorMsg = "I couldn't reach my cloud AI brain. But I am still here! Try asking me 'What is SkillSwap?' 🧠";
         }
         
-        res.status(500).json({ error: errorMsg });
+        res.json({ reply: errorMsg });
     }
 });
 
