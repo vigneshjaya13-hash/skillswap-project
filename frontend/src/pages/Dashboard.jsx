@@ -127,6 +127,14 @@ const Dashboard = () => {
                 // Instantly update UI visually instead of blocking alert
                 setRequestedSkills(prev => new Set([...prev, skill.id]));
                 logActivity(`Sent swap request to @${skill.username} for "${skill.name}" 🤝`);
+                
+                // Simulating Skill Economy / Timebank subtraction live!
+                const currentCredits = parseInt(localStorage.getItem('skill_credits') || "5");
+                if (currentCredits > 0) {
+                    localStorage.setItem('skill_credits', currentCredits - 1);
+                    window.dispatchEvent(new Event('creditsUpdated'));
+                    logActivity(`Spent 1 Timebank Credit. Remaining: ${currentCredits - 1} Hrs`);
+                }
             } else {
                 console.error("Could not send swap request.");
             }
@@ -174,6 +182,13 @@ const Dashboard = () => {
                                     <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>by @{skill.username}</span>
                                 </div>
                                 <h3 style={{ fontSize: '1.3rem', marginBottom: '10px' }}>{skill.name}</h3>
+                                
+                                {/* Simulated Reputation System */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px', color: '#fbbf24', fontSize: '0.9rem', fontWeight: 600 }}>
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>⭐ {(5.0 - (skill.id % 5) * 0.1).toFixed(1)}</span>
+                                    <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>({(skill.id * 7) % 50 + 5} reviews)</span>
+                                </div>
+                                
                                 <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, flex: 1 }}>{skill.description}</p>
                                 
                                 {skill.resource_link && (

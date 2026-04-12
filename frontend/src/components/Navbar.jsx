@@ -7,10 +7,20 @@ const Navbar = () => {
     const [showAuth, setShowAuth] = useState(false);
     const [user, setUser] = useState(null);
     const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+    const [credits, setCredits] = useState(5);
 
     useEffect(() => {
         const stored = localStorage.getItem('skillswap_user');
         if (stored) setUser(JSON.parse(stored));
+
+        // Listen for custom credit update events dynamically
+        const updateCredits = () => {
+            const currentCredits = localStorage.getItem('skill_credits');
+            if (currentCredits) setCredits(parseInt(currentCredits));
+        };
+        updateCredits();
+        window.addEventListener('creditsUpdated', updateCredits);
+        return () => window.removeEventListener('creditsUpdated', updateCredits);
     }, []);
 
     const handleAuth = async (e) => {
@@ -91,7 +101,7 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                                 <div title="Timebank Credits" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', padding: '4px 10px', borderRadius: '15px', display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 600, fontSize: '0.9rem', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-                                    <Coins size={14}/> 5 Hrs
+                                    <Coins size={14}/> {credits} Hrs
                                 </div>
                                 <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
                                     <User size={16} /> {user.username}
