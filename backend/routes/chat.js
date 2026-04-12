@@ -1,58 +1,36 @@
 const express = require('express');
 const router = express.Router();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 router.post('/', async (req, res) => {
     const { message } = req.body;
     try {
         console.log('Sending message to AI:', message);
-        const msgLower = message.toLowerCase();
         
-        // 1. INTELLIGENT LOCAL HEURISTIC AI (100% Reliable for Demo)
-        if (msgLower.includes('how') && (msgLower.includes('post') || msgLower.includes('add') || msgLower.includes('create'))) {
-            return res.json({ reply: "To post a skill or request, simply go to your Dashboard and click the 'Add Skill' button at the top right! Fill out the form and it will be live immediately! 🚀" });
+        // 1. Check for API Key configured in Render Env Vars
+        if (!process.env.GEMINI_API_KEY) {
+            return res.json({ 
+                reply: "Hello! My Gemini AI upgrade is almost complete. The administrator just needs to paste the free GEMINI_API_KEY into the Render environment variables to activate my intelligence! 🧠✨" 
+            });
         }
-        if (msgLower.includes('what') && msgLower.includes('skillswap')) {
-            return res.json({ reply: "SkillSwap is a revolutionary peer-to-peer platform where users can offer skills they know, and request skills they want to learn. No money involved—just exchanging knowledge! 🧠🤝" });
-        }
-        if (msgLower.includes('who') && (msgLower.includes('build') || msgLower.includes('made') || msgLower.includes('creator'))) {
-            return res.json({ reply: "This platform was built as an advanced DBMS and Fullstack web project! It uses a highly scalable TiDB cloud database, React, and Node.js. 🌟" });
-        }
-        if (msgLower.includes('hello') || msgLower.includes('hey') || msgLower === 'hi' || msgLower.includes('hi ')) {
-            return res.json({ reply: "Hello! I'm your SkillSwap Artificial Intelligence. I can help you navigate the platform, learn how to trade skills, or answer any technical questions. How can I assist you today? 🤖" });
-        }
-        
-        // 2. FALLBACK TO CLOUD AI
-        const prompt = `You are a highly advanced AI assistant for the Skill Swap platform. 
-User says: "${message}"
-Respond in a helpful, conversational, and deeply knowledgeable way. Keep it relatively concise but extremely intelligent.`;
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000); // reduced to 6s to be snappy
+        // 2. Instantiate Official Google Gemini Model
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        const response = await fetch('https://text.pollinations.ai/' + encodeURIComponent(prompt), {
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
+        const prompt = `You are an incredibly smart, highly advanced AI assistant for a peer-to-peer web application called "Skill Swap". 
+This platform was built as a DBMS and Fullstack Web course project.
+The user's message is below. Respond conversationally, format it nicely, and be extremely helpful.
+User says: "${message}"`;
 
-        if (!response.ok) {
-            throw new Error(`AI API returned ${response.status}`);
-        }
+        const result = await model.generateContent(prompt);
+        const aiResponse = result.response.text();
         
-        const aiResponse = await response.text();
         res.json({ reply: aiResponse });
 
     } catch (error) {
-        console.error("AI API Error:", error.message);
-        let errorMsg = "I'm having a little trouble connecting to my AI brain right now. Please try again in a moment! 🧠⚠️";
-        
-        if (error.name === 'AbortError') {
-            errorMsg = "The AI network is extremely busy right now and took too long to answer! Try asking me about 'SkillSwap' or 'how to post' instead! ⏳";
-        } else {
-            errorMsg = "I couldn't reach my cloud AI brain. But I am still here! Try asking me 'What is SkillSwap?' 🧠";
-        }
-        
-        res.json({ reply: errorMsg });
+        console.error("Gemini API Error:", error.message);
+        res.json({ reply: "I am connected to Gemini Cloud, but there was a temporary processing error processing your request. Please try again! ⏳" });
     }
 });
 
